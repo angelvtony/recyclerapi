@@ -1,12 +1,13 @@
 package com.example.recyclerapi
 
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.recyclerapi.models.Result
+import com.example.recyclerapi.Result
 
 
 
@@ -17,7 +18,11 @@ class CarFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            carData = it.getSerializable(para_name) as User
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                carData = it.getParcelable(para_name,Result::class.java) as User
+            }else{
+                carData = it.getParcelable<Result>(para_name) as User
+            }
 
         }
     }
@@ -36,10 +41,19 @@ class CarFragment : Fragment() {
         var textView :TextView=view.findViewById(R.id.txt)
         var textView2 :TextView=view.findViewById(R.id.txt1)
         var textView3 :TextView=view.findViewById(R.id.txt2)
+        var textView4 :TextView=view.findViewById(R.id.txt3)
 
         textView.text=carData?.Mfr_CommonName
         textView2.text=carData?.Mfr_ID
         textView3.text=carData?.Mfr_Name
+        val vehicleTypes = carData?.VehicleTypes
+        if (vehicleTypes != null) {
+            var vehicleTypesString = ""
+            for (vehicleType in vehicleTypes) {
+                vehicleTypesString += vehicleType.Name + " "
+            }
+            textView4.text = vehicleTypesString
+        }
     }
 
     companion object {
@@ -48,7 +62,7 @@ class CarFragment : Fragment() {
         fun newInstance(carModel:User) =
             CarFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(para_name,carModel)
+                    putParcelable(para_name,carModel)
                 }
             }
     }

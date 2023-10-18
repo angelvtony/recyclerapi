@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.recyclerapi.models.Result
 
 class UserAdapter(private val mList: List<User>, private val clickListener: (carModel:User)->Unit) : RecyclerView.Adapter<UserAdapter.ViewHolder>(){
 

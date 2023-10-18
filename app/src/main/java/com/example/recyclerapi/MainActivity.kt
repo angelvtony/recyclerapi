@@ -3,15 +3,8 @@ package com.example.recyclerapi
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.recyclerapi.models.Result
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("SuspiciousIndentation", "MissingInflatedId")
