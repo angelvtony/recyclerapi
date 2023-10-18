@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
+    app:cardCornerRadius="12dp"
     app:cardElevation="4dp"
     app:cardUseCompatPadding="true"
-    app:cardBackgroundColor="#FFFFFF"
+    app:cardBackgroundColor="#CCC9C9"
     app:contentPadding="8dp"
     tools:ignore="MissingClass">
 
@@ -27,9 +27,9 @@
         android:text="Leo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textSize="20sp"
+        android:textSize="23sp"
         android:textStyle="bold"
-        android:textColor="#333"/>
+        android:textColor="@color/black"/>
 
 <!--    <TextView-->
 <!--        android:id="@+id/commonName"-->
