@@ -20,8 +20,8 @@ class UserAdapter(private val listener : (User) -> Unit) : ListAdapter<User, Use
 
         fun bind(user : User){
             containerView.findViewById<TextView>(R.id.country).text = user.Country
-            containerView.findViewById<TextView>(R.id.commonName).text = user.Mfr_Name
-            containerView.findViewById<TextView>(R.id.mfrid).text = user.Mfr_ID
+//            containerView.findViewById<TextView>(R.id.commonName).text = user.Mfr_CommonName
+//            containerView.findViewById<TextView>(R.id.mfrid).text = user.Mfr_ID
             containerView.findViewById<TextView>(R.id.mfrname).text = user.Mfr_Name
         }
     }
@@ -35,7 +35,7 @@ class UserAdapter(private val listener : (User) -> Unit) : ListAdapter<User, Use
 }
 class DiffUserCallBack : DiffUtil.ItemCallback<User>(){
     override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
-        return oldItem.Mfr_ID == newItem.Mfr_ID
+        return oldItem.Country == newItem.Country
     }
     override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
         return oldItem == newItem
