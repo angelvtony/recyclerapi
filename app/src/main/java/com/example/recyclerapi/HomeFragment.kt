@@ -9,15 +9,20 @@ import android.widget.ProgressBar
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.recyclerapi.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
 
 
 class HomeFragment : Fragment() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         arguments?.let {
         }
+
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

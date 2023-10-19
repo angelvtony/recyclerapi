@@ -14,7 +14,6 @@ import com.example.recyclerapi.Result
 class CarFragment : Fragment() {
     private var carData:User?=null
    private var para_name= "carmodels"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -23,10 +22,8 @@ class CarFragment : Fragment() {
             }else{
                 carData = it.getParcelable<Result>(para_name) as User
             }
-
         }
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,7 +31,6 @@ class CarFragment : Fragment() {
 
         return inflater.inflate(R.layout.fragment_car, container, false)
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -42,10 +38,12 @@ class CarFragment : Fragment() {
         var textView2 :TextView=view.findViewById(R.id.txt1)
         var textView3 :TextView=view.findViewById(R.id.txt2)
         var textView4 :TextView=view.findViewById(R.id.txt3)
+        var textView5 :TextView=view.findViewById(R.id.txt4)
 
         textView.text=carData?.Mfr_CommonName
         textView2.text=carData?.Mfr_ID
         textView3.text=carData?.Mfr_Name
+        textView5.text=carData?.Country
         val vehicleTypes = carData?.VehicleTypes
         if (vehicleTypes != null) {
             var vehicleTypesString = ""
@@ -55,9 +53,7 @@ class CarFragment : Fragment() {
             textView4.text = vehicleTypesString
         }
     }
-
     companion object {
-        // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(carModel:User) =
             CarFragment().apply {
