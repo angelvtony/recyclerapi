@@ -1,13 +1,13 @@
-package com.example.recyclerapi
+package com.example.recyclerapi.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 
 
-data class Cars(val Results:List<User>):Serializable
+data class Cars(val Results:List<CarsList>):Serializable
 @Parcelize
-data class User(
+data class CarsList(
     val Country: String,
     val Mfr_ID: String,
     val Mfr_CommonName: String,
