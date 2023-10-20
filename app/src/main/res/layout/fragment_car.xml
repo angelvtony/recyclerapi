@@ -11,7 +11,7 @@
     app:cardElevation="4dp"
     app:cardUseCompatPadding="true"
     app:cardBackgroundColor="@android:color/transparent"
-    tools:context=".CarFragment">
+    tools:context=".modules.fragments.CarFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

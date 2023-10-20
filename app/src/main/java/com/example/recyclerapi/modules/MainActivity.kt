@@ -1,11 +1,12 @@
-package com.example.recyclerapi
+package com.example.recyclerapi.modules
 
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.recyclerapi.databinding.ActivityMainBinding
+import com.example.recyclerapi.R
+import com.example.recyclerapi.modules.fragments.HomeFragment
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("SuspiciousIndentation", "MissingInflatedId")

@@ -1,4 +1,4 @@
-package com.example.recyclerapi
+package com.example.recyclerapi.models
 
 data class CarsDataList(
     val Count: Int,

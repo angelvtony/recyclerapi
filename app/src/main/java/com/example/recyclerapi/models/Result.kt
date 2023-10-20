@@ -1,4 +1,4 @@
-package com.example.recyclerapi
+package com.example.recyclerapi.models
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
