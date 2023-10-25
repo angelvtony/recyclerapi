@@ -1,6 +1,7 @@
 package com.example.recyclerapi.network
 
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import com.example.recyclerapi.R
 import com.example.recyclerapi.models.CarsList
 
 class UserAdapter(
-    private val mList: List<CarsList>,
+    private var mList: List<CarsList>,
     private val clickListener: (carModel: CarsList) -> Unit
 ) : RecyclerView.Adapter<UserAdapter.ViewHolder>() {
 
@@ -40,6 +41,13 @@ class UserAdapter(
 
     override fun getItemCount(): Int {
         return mList.size
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateItems(newItems: List<CarsList>){
+
+        mList= newItems
+        notifyDataSetChanged()
     }
 
 

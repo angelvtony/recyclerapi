@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,8 +17,16 @@ import com.example.recyclerapi.models.CarsList
 
 
 class HomeFragment : Fragment() {
-    private lateinit var carsViewModel: CarsViewModel
 
+    private lateinit var originalDataList:List<CarsList>
+    private lateinit var tempDataList: List<CarsList>
+
+    private val pageSize:Int =6
+
+    private lateinit var adapter:UserAdapter
+
+
+    private var isScrolling=false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,24 +39,63 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val loading = view?.findViewById<ProgressBar>(R.id.progress_bar)
-        var viewModel = ViewModelProvider(this).get(CarsViewModel::class.java)
+       // val loading = view?.findViewById<ProgressBar>(R.id.progress_bar)
+        val viewModel = ViewModelProvider(this).get(CarsViewModel::class.java)
+
+        val usersRecyclerView = view?.findViewById<RecyclerView>(R.id.users_list_view)
 
         viewModel.car.observe(viewLifecycleOwner){
 
-            val usersRecyclerView = view?.findViewById<RecyclerView>(R.id.users_list_view)
-                ?.apply {
+            originalDataList = it.Results
+            tempDataList= originalDataList.subList(0, minOf(pageSize,originalDataList.size))
 
-                    layoutManager = LinearLayoutManager(this.context)
-                    adapter = UserAdapter(it.Results,{ onItemClickListener(it) })
-                    //setHasFixedSize(true)
+            adapter =UserAdapter(it.Results,{ onItemClickListener(it) })
 
-                }
+             usersRecyclerView
+                 ?.apply {
 
-            loading?.visibility = View.GONE
+                     layoutManager = LinearLayoutManager(this.context)
+
+                     //setHasFixedSize(true)
+
+                 }!!
+
+            usersRecyclerView.adapter = adapter
+
+//            loading?.visibility = View.GONE
 
 
         }
+
+        usersRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+
+            val layoutManager = LinearLayoutManager(requireContext())
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if(newState== AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+
+                    isScrolling=true
+                }
+
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val visibleItemCount = layoutManager.childCount
+                val totalItemCount = layoutManager.itemCount
+                val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
+
+                if( (visibleItemCount + firstVisibleItem)>=totalItemCount){
+
+                    isScrolling=false
+                    loadMoreItems()
+                }
+
+            }
+        })
 
 
         viewModel.getCar()
@@ -56,6 +104,7 @@ class HomeFragment : Fragment() {
 
     }
 
+
     fun onItemClickListener(carModel: CarsList) {
 
         val fragment = CarFragment.newInstance(carModel)
@@ -63,6 +112,19 @@ class HomeFragment : Fragment() {
         transaction?.replace(R.id.fragmentContainer, fragment)
             ?.addToBackStack(null)
             ?.commit()
+    }
+
+
+    fun loadMoreItems(){
+
+        var pageStart = tempDataList.size
+        var pageEnd= minOf(pageStart+pageSize, originalDataList.size)
+
+        tempDataList+=originalDataList.subList(pageStart,pageEnd)
+
+        adapter.updateItems(tempDataList)
+
+
     }
 
     companion object {
