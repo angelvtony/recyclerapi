@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AbsListView
-import android.widget.ProgressBar
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,21 +15,23 @@ import com.example.recyclerapi.network.UserAdapter
 import com.example.recyclerapi.models.CarsList
 import android.os.Handler
 import android.util.Log
+import android.widget.ProgressBar
 
 
 class HomeFragment : Fragment() {
 
-    private lateinit var originalDataList:List<CarsList>
+    private lateinit var originalDataList: List<CarsList>
     private lateinit var tempDataList: List<CarsList>
 
-    private val pageSize=10
+    private val pageSize = 10
 
-    private lateinit var userAdapter:UserAdapter
+    private lateinit var userAdapter: UserAdapter
+    var progress_bar:ProgressBar?=null
 
-    private var handler=Handler()
+    private var handler = Handler()
 
 
-    private var isScrolling=false
+    private var isScrolling = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -44,45 +45,40 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        var view= inflater.inflate(R.layout.fragment_home, container, false)
-       // val loading = view?.findViewById<ProgressBar>(R.id.progress_bar)
+        var view = inflater.inflate(R.layout.fragment_home, container, false)
+        progress_bar = view.findViewById<ProgressBar>(R.id.progress_bar)
         val viewModel = ViewModelProvider(this).get(CarsViewModel::class.java)
 
         val usersRecyclerView = view.findViewById<RecyclerView>(R.id.users_list_view)
 
-        viewModel.car.observe(viewLifecycleOwner){
+        viewModel.car.observe(viewLifecycleOwner) {
 
             originalDataList = it.Results
-            tempDataList= originalDataList.subList(0, minOf(pageSize,originalDataList.size))
+            tempDataList = originalDataList.subList(0, minOf(pageSize, originalDataList.size))
 
-            userAdapter =UserAdapter(tempDataList,{ onItemClickListener(it) })
+            userAdapter = UserAdapter(tempDataList, { onItemClickListener(it) })
 
-             usersRecyclerView
-                 ?.apply {
+            usersRecyclerView
+                ?.apply {
 
-                     layoutManager = LinearLayoutManager(this.context)
+                    layoutManager = LinearLayoutManager(this.context)
 
-                     adapter=userAdapter
-                     //setHasFixedSize(true)
+                    adapter = userAdapter
 
-                 }!!
-
-
-//            loading?.visibility = View.GONE
+                }!!
 
 
         }
 
-        usersRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-
+        usersRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if(newState== AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
 
-                    isScrolling=true
+                    isScrolling = true
                 }
 
             }
@@ -94,10 +90,12 @@ class HomeFragment : Fragment() {
                 val totalItemCount = layoutManager.itemCount
                 val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
 
-                if( isScrolling && (visibleItemCount + firstVisibleItem)>=totalItemCount){
+                if (isScrolling && (visibleItemCount + firstVisibleItem) >= totalItemCount) {
 
-                    isScrolling=false
+
+                    isScrolling = false
                     loadMoreItems()
+
                 }
 
             }
@@ -121,16 +119,18 @@ class HomeFragment : Fragment() {
     }
 
 
-    fun loadMoreItems(){
+    fun loadMoreItems() {
 
         var pageStart = tempDataList.size
-        var pageEnd= minOf(pageStart+pageSize, originalDataList.size)
+        var pageEnd = minOf(pageStart + pageSize, originalDataList.size)
 
-        tempDataList+=originalDataList.subList(pageStart,pageEnd)
+        tempDataList += originalDataList.subList(pageStart, pageEnd)
+        progress_bar?.visibility = View.VISIBLE
 
-        Log.d("TEMP LIST",tempDataList.size.toString())
+        Log.d("TEMP LIST", tempDataList.size.toString())
         handler.postDelayed({
             userAdapter.updateItems(tempDataList)
+            progress_bar?.visibility = View.GONE
 
         }, 2000)
 

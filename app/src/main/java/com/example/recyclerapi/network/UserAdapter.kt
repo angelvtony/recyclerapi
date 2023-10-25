@@ -45,10 +45,10 @@ class UserAdapter(
     }
 
 
-    fun updateItems(newItems: List<CarsList>){
+    fun updateItems(newItems: List<CarsList>) {
 
-        mList= newItems
-        Log.d("MLIST SIZE",mList.size.toString())
+        mList = newItems
+        Log.d("MLIST SIZE", mList.size.toString())
         notifyDataSetChanged()
     }
 
