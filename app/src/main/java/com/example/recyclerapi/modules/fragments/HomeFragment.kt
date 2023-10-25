@@ -14,6 +14,8 @@ import com.example.recyclerapi.viewmodel.CarsViewModel
 import com.example.recyclerapi.R
 import com.example.recyclerapi.network.UserAdapter
 import com.example.recyclerapi.models.CarsList
+import android.os.Handler
+import android.util.Log
 
 
 class HomeFragment : Fragment() {
@@ -21,9 +23,11 @@ class HomeFragment : Fragment() {
     private lateinit var originalDataList:List<CarsList>
     private lateinit var tempDataList: List<CarsList>
 
-    private val pageSize:Int =6
+    private val pageSize=10
 
-    private lateinit var adapter:UserAdapter
+    private lateinit var userAdapter:UserAdapter
+
+    private var handler=Handler()
 
 
     private var isScrolling=false
@@ -39,28 +43,30 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        var view= inflater.inflate(R.layout.fragment_home, container, false)
        // val loading = view?.findViewById<ProgressBar>(R.id.progress_bar)
         val viewModel = ViewModelProvider(this).get(CarsViewModel::class.java)
 
-        val usersRecyclerView = view?.findViewById<RecyclerView>(R.id.users_list_view)
+        val usersRecyclerView = view.findViewById<RecyclerView>(R.id.users_list_view)
 
         viewModel.car.observe(viewLifecycleOwner){
 
             originalDataList = it.Results
             tempDataList= originalDataList.subList(0, minOf(pageSize,originalDataList.size))
 
-            adapter =UserAdapter(it.Results,{ onItemClickListener(it) })
+            userAdapter =UserAdapter(tempDataList,{ onItemClickListener(it) })
 
              usersRecyclerView
                  ?.apply {
 
                      layoutManager = LinearLayoutManager(this.context)
 
+                     adapter=userAdapter
                      //setHasFixedSize(true)
 
                  }!!
 
-            usersRecyclerView.adapter = adapter
 
 //            loading?.visibility = View.GONE
 
@@ -69,7 +75,7 @@ class HomeFragment : Fragment() {
 
         usersRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener(){
 
-            val layoutManager = LinearLayoutManager(requireContext())
+
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -83,12 +89,12 @@ class HomeFragment : Fragment() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                 val visibleItemCount = layoutManager.childCount
                 val totalItemCount = layoutManager.itemCount
                 val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
 
-                if( (visibleItemCount + firstVisibleItem)>=totalItemCount){
+                if( isScrolling && (visibleItemCount + firstVisibleItem)>=totalItemCount){
 
                     isScrolling=false
                     loadMoreItems()
@@ -100,7 +106,7 @@ class HomeFragment : Fragment() {
 
         viewModel.getCar()
 
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return view
 
     }
 
@@ -122,7 +128,11 @@ class HomeFragment : Fragment() {
 
         tempDataList+=originalDataList.subList(pageStart,pageEnd)
 
-        adapter.updateItems(tempDataList)
+        Log.d("TEMP LIST",tempDataList.size.toString())
+        handler.postDelayed({
+            userAdapter.updateItems(tempDataList)
+
+        }, 2000)
 
 
     }

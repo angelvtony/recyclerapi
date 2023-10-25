@@ -2,6 +2,7 @@ package com.example.recyclerapi.network
 
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,10 +44,11 @@ class UserAdapter(
         return mList.size
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+
     fun updateItems(newItems: List<CarsList>){
 
         mList= newItems
+        Log.d("MLIST SIZE",mList.size.toString())
         notifyDataSetChanged()
     }
 
