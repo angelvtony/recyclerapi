@@ -11,12 +11,12 @@ import kotlinx.coroutines.launch
 class CarsViewModel : ViewModel() {
     var car:MutableLiveData<Cars> = MutableLiveData()
 
-    fun getCar(){
+    fun getCar(page : Int){
         viewModelScope.launch {
             try {
                 val retrofit = RetrofitInstance.getCarData()
                 val service = retrofit.create(ApiInterface::class.java)
-                val response = service.getUserData()
+                val response = service.getUserData(page)
                 car.value=response
             }
             catch (e:Exception){

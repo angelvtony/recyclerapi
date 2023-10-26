@@ -17,70 +17,56 @@ import android.os.Handler
 import android.util.Log
 import android.widget.ProgressBar
 
-
 class HomeFragment : Fragment() {
-
-    private lateinit var originalDataList: List<CarsList>
-    private lateinit var tempDataList: List<CarsList>
-
-    private val pageSize = 10
-
+    private lateinit var viewModel: CarsViewModel
+    private var tempDataList: List<CarsList> = listOf()
+    private val pageSize = 50
     private lateinit var userAdapter: UserAdapter
-    var progress_bar:ProgressBar?=null
-
+    private var progress_bar: ProgressBar? = null
     private var handler = Handler()
-
-
     private var isScrolling = false
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private var currentPage = 1
 
-        arguments?.let {
-        }
-
-    }
-
+    private var isFirstTime: Boolean = true
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        var view = inflater.inflate(R.layout.fragment_home, container, false)
+        val view = inflater.inflate(R.layout.fragment_home, container, false)
         progress_bar = view.findViewById<ProgressBar>(R.id.progress_bar)
-        val viewModel = ViewModelProvider(this).get(CarsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(CarsViewModel::class.java)
 
         val usersRecyclerView = view.findViewById<RecyclerView>(R.id.users_list_view)
 
-        viewModel.car.observe(viewLifecycleOwner) {
+        progress_bar!!.visibility = View.VISIBLE
+        viewModel.car.observe(viewLifecycleOwner) { carsResponse ->
+            tempDataList += carsResponse.Results.subList(
+                0,
+                minOf(pageSize, carsResponse.Results.size)
+            )
 
-            originalDataList = it.Results
-            tempDataList = originalDataList.subList(0, minOf(pageSize, originalDataList.size))
+            if (isFirstTime) {
 
-            userAdapter = UserAdapter(tempDataList, { onItemClickListener(it) })
+                userAdapter = UserAdapter(tempDataList) { onItemClickListener(it) }
+                usersRecyclerView?.layoutManager = LinearLayoutManager(this.context)
+                usersRecyclerView?.adapter = userAdapter
+                isFirstTime = false
 
-            usersRecyclerView
-                ?.apply {
+            } else {
 
-                    layoutManager = LinearLayoutManager(this.context)
+                userAdapter.updateItems(tempDataList)
+            }
 
-                    adapter = userAdapter
-
-                }!!
-
-
+            progress_bar!!.visibility = View.GONE
         }
 
         usersRecyclerView?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-
-
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-
                     isScrolling = true
                 }
-
             }
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -91,58 +77,25 @@ class HomeFragment : Fragment() {
                 val firstVisibleItem = layoutManager.findFirstVisibleItemPosition()
 
                 if (isScrolling && (visibleItemCount + firstVisibleItem) >= totalItemCount) {
-
-
                     isScrolling = false
-                    loadMoreItems()
+//                    loadMoreItems()
+                    progress_bar!!.visibility = View.VISIBLE
+                    viewModel.getCar(++currentPage)
 
                 }
-
             }
         })
 
-
-        viewModel.getCar()
+        viewModel.getCar(currentPage)
 
         return view
-
     }
 
-
     fun onItemClickListener(carModel: CarsList) {
-
         val fragment = CarFragment.newInstance(carModel)
         val transaction = activity?.supportFragmentManager?.beginTransaction()
         transaction?.replace(R.id.fragmentContainer, fragment)
             ?.addToBackStack(null)
             ?.commit()
-    }
-
-
-    fun loadMoreItems() {
-
-        var pageStart = tempDataList.size
-        var pageEnd = minOf(pageStart + pageSize, originalDataList.size)
-
-        tempDataList += originalDataList.subList(pageStart, pageEnd)
-        progress_bar?.visibility = View.VISIBLE
-
-        Log.d("TEMP LIST", tempDataList.size.toString())
-        handler.postDelayed({
-            userAdapter.updateItems(tempDataList)
-            progress_bar?.visibility = View.GONE
-
-        }, 2000)
-
-
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
     }
 }
